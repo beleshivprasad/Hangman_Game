@@ -13,7 +13,7 @@ const Header = () => {
             </h1>
           </Navbar.Brand>
           <Nav className="d-flex" style={{ maxHeight: "100px" }} navbarScroll>
-            <Nav.Link href="">Home</Nav.Link>
+            {/* <Nav.Link href="">Home</Nav.Link> */}
           </Nav>
         </Container>
       </Navbar>
