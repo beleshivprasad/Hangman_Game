@@ -1,0 +1,19 @@
+{
+  "name": "hangman",
+  "version": "1.0.0",
+  "description": "This is the hangman game for Josh Day 3",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js"
+  },
+  "author": "beleshivprasad",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.24.0",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.2",
+    "express-async-handler": "^1.2.0",
+    "nodemon": "^2.0.15"
+  }
+}
