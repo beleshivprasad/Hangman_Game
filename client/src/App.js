@@ -3,7 +3,8 @@ import React from "react";
 import "./App.css";
 import Header from "./component/Header";
 import Footer from "./component/Footer";
-import GamePage from "./screens/GamePage";
+import GamePage from "./screens/GamePage/GamePage";
+import LandingPage from "./screens/LandingPage/LandingPage";
 
 function App() {
   return (
@@ -12,6 +13,9 @@ function App() {
       <main className="main">
         <Route path="/start" exact>
           <GamePage></GamePage>
+        </Route>
+        <Route path="/" exact>
+          <LandingPage></LandingPage>
         </Route>
       </main>
       <Footer></Footer>

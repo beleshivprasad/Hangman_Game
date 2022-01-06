@@ -7,14 +7,12 @@ const Header = () => {
     <>
       <Navbar expand="lg" variant="dark" bg="dark">
         <Container>
-          <Navbar.Brand href="" className="mx-auto">
-            <h1>Hangman</h1>
+          <Navbar.Brand className="mx-auto">
+            <h1>
+              <Link to="/">Hangman</Link>
+            </h1>
           </Navbar.Brand>
-          <Nav
-            className=""
-            style={{ maxHeight: "100px" }}
-            navbarScroll
-          >
+          <Nav className="d-flex" style={{ maxHeight: "100px" }} navbarScroll>
             <Nav.Link href="">Home</Nav.Link>
           </Nav>
         </Container>

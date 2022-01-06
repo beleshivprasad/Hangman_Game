@@ -1,4 +1,7 @@
-
+.gamepage {
+  min-height: 87vh;
+  background-color: rgb(83, 116, 110);
+}
 
 .game {
   position: fixed;
@@ -7,4 +10,8 @@
   max-width: 50%;
   max-height: 50%;
   transform: translate(-50%, -50%);
+}
+
+.col {
+  display: flex ;
 }

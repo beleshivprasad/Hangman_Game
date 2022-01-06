@@ -3,7 +3,9 @@ import React from "react";
 const Footer = () => {
   return (
     <>
-      <div className="footer">Hangman Game &copy; 2022</div>
+      <div className="footer" style={{ textAlign: "center" }}>
+        Hangman Game &copy; 2022
+      </div>
     </>
   );
 };
