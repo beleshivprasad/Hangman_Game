@@ -9,7 +9,7 @@ const Header = () => {
         <Container>
           <Navbar.Brand className="mx-auto">
             <h1>
-              <Link to="/">Hangman</Link>
+              <Link to="/" className="heading" >Hangman</Link>
             </h1>
           </Navbar.Brand>
           <Nav className="d-flex" style={{ maxHeight: "100px" }} navbarScroll>
