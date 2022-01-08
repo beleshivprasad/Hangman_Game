@@ -104,20 +104,22 @@ const GamePage = () => {
           setWin(true);
           setTimeout(() => {
             setWin(false);
-          }, 4000);
+          }, 6000);
         }
       } else {
-        setWrong(true);
+        if (lives !== 1) {
+          setWrong(true);
+        }
         setTimeout(() => {
           setWrong(false);
-        }, 1000);
+        }, 1500);
         setLives(lives - 1);
         if (lives === 1) {
           setStarted(false);
           setLost(true);
           setTimeout(() => {
             setLost(false);
-          }, 4000);
+          }, 6000);
         }
       }
     }
@@ -287,7 +289,7 @@ const GamePage = () => {
                 <Form.Control
                   className="input"
                   type="text"
-                  placeholder="Enter Word"
+                  placeholder="Guess Letter for Above Word"
                   maxLength={1}
                   value={checkWord}
                   onChange={(e) => {
