@@ -19,9 +19,7 @@ const GamePage = () => {
 
   // Alert States
   const [wrong, setWrong] = useState(false);
-  const [right, setRight] = useState(false);
   const [error, setError] = useState(false);
-  const [tryNext, setTryNext] = useState("");
 
   // Modal related states
   const [show, setShow] = useState(false);
@@ -37,8 +35,6 @@ const GamePage = () => {
   const [name, setName] = useState("");
   const [started, setStarted] = useState(false);
   const [lives, setLives] = useState(5);
-  const [submitCounter, setSubmitCounter] = useState(1);
-  const [score, setScore] = useState(0);
   const [win, setWin] = useState(false);
   const [lost, setLost] = useState(false);
 
@@ -48,13 +44,22 @@ const GamePage = () => {
   //Calling Api to get Word
   const loadWord = async () => {
     const response = await axios.get(
-      "https://random-word-api.herokuapp.com/word"
+      "https://random-word-api.herokuapp.com/word",
+      {
+        "Access-Control-Allow-Origin": "*",
+        Connection: "close",
+        "Content-Type": "application/json",
+      }
     );
+    // const response = {
+    //   data: ["shivprasad"],
+    // };
+
     setWord(response.data);
     let temp = [];
     let wd = Array.from(response.data[0]);
     wd.forEach((char, ind) => {
-      temp.push(" _ ");
+      temp.push("_");
     });
     wd.forEach((char, ind) => {
       let num;
@@ -70,60 +75,49 @@ const GamePage = () => {
   //Submit Handler
   const submitHandler = async (e) => {
     e.preventDefault();
-    if (checkWord.normalize() === "" || word[0].length !== checkWord.length) {
+
+    if (checkWord.normalize() === "") {
       setError(true);
       setTimeout(() => {
         setError(false);
       }, 2000);
     } else {
-      if (word[0].normalize() === checkWord.normalize()) {
-        setScore(score + 1);
-        if (score === 4) {
+      let flag = false;
+      let temp = Array.from(word[0]);
+      // console.log(temp, arrayWord);
+      let wordTemp = Array.from(arrayWord);
+      // console.log(wordTemp);
+      temp.forEach((char, ind) => {
+        if (checkWord.normalize() === char) {
+          flag = true;
+          wordTemp[ind] = temp[ind];
+        }
+      });
+
+      if (flag === true) {
+        setArrayWord(wordTemp.join(""));
+        let str1 = wordTemp.join("");
+        let str2 = word[0].normalize();
+        console.log(str1, str2);
+
+        if (str1 === str2) {
           setWin(true);
-          setScore(0);
-          setStarted(false);
           setTimeout(() => {
             setWin(false);
-          }, 8000);
+          }, 4000);
         }
-        setCheckWord("");
-        setWord("");
-        loadWord();
-        setArrayWord("");
-        setRight(true);
-        setTimeout(() => {
-          setRight(false);
-        }, 900);
       } else {
+        setWrong(true);
+        setTimeout(() => {
+          setWrong(false);
+        }, 1000);
         setLives(lives - 1);
-        console.log(lives);
         if (lives === 1) {
-          setLost(true);
           setStarted(false);
-          setWord("");
-          setArrayWord("");
-          setLives(5)
-          setScore(0)
+          setLost(true);
           setTimeout(() => {
             setLost(false);
-          }, 8000);
-        } else {
-          setSubmitCounter(submitCounter + 1);
-          if (submitCounter === 5) {
-            setSubmitCounter(1);
-            setTryNext("Try Next Word");
-            setTimeout(() => {
-              setTryNext("");
-            }, 2000);
-            setCheckWord("");
-            setArrayWord("");
-            setWord("");
-            loadWord();
-          }
-          setWrong(true);
-          setTimeout(() => {
-            setWrong(false);
-          }, 900);
+          }, 4000);
         }
       }
     }
@@ -166,9 +160,7 @@ const GamePage = () => {
         {/* Input Field Error  */}
         <Row>
           {error ? (
-            <Alert variant="danger">
-              Please Enter Complete Word of Same length !!
-            </Alert>
+            <Alert variant="danger">Please Enter Something</Alert>
           ) : (
             <></>
           )}
@@ -178,16 +170,7 @@ const GamePage = () => {
         <Row>
           {wrong ? (
             <Alert className="alert" variant="danger">
-              Wrong !!{tryNext}
-            </Alert>
-          ) : (
-            <></>
-          )}
-        </Row>
-        <Row>
-          {right ? (
-            <Alert className="alert" variant="sucess">
-              Correct !!
+              Wrong !!
             </Alert>
           ) : (
             <></>
@@ -221,22 +204,15 @@ const GamePage = () => {
         {/* Players Name  */}
         <Row className="gameArea">
           <Col className="c">
-            <Button className="item" variant="dark">
+            <Button className="item" variant="warning">
               Player {name !== "" ? name : ""}
             </Button>
           </Col>
 
           {/* Lives  */}
           <Col className="c">
-            <Button className="item" variant="warning">
-              Lives {lives}
-            </Button>
-          </Col>
-
-          {/* Score  */}
-          <Col className="c">
             <Button className="item" variant="success">
-              Score {score}
+              Lives {lives}
             </Button>
           </Col>
         </Row>
@@ -252,8 +228,6 @@ const GamePage = () => {
                   setStarted(false);
                   setWord("");
                   setLives(5);
-                  setScore(0);
-                  setSubmitCounter(1);
                   setCheckWord("");
                   setArrayWord("");
                   history.push("/game");
@@ -267,6 +241,9 @@ const GamePage = () => {
                 variant="dark"
                 className="item"
                 onClick={() => {
+                  setLives(5);
+                  setWin(false);
+                  setLost(false);
                   setStarted(true);
                   if (name === "") {
                     handleShow();
@@ -311,6 +288,7 @@ const GamePage = () => {
                   className="input"
                   type="text"
                   placeholder="Enter Word"
+                  maxLength={1}
                   value={checkWord}
                   onChange={(e) => {
                     setCheckWord(e.target.value);
