@@ -48,7 +48,12 @@ const GamePage = () => {
   //Calling Api to get Word
   const loadWord = async () => {
     const response = await axios.get(
-      "https://random-word-api.herokuapp.com/word"
+      "https://random-word-api.herokuapp.com/word",
+      {
+        "Access-Control-Allow-Origin": "*",
+        Connection: "close",
+        "Content-Type": "application/json",
+      }
     );
     setWord(response.data);
     let temp = [];
@@ -102,8 +107,8 @@ const GamePage = () => {
           setStarted(false);
           setWord("");
           setArrayWord("");
-          setLives(5)
-          setScore(0)
+          setLives(5);
+          setScore(0);
           setTimeout(() => {
             setLost(false);
           }, 8000);
