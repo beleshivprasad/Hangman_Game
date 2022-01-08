@@ -40,6 +40,7 @@ const GamePage = () => {
   const [submitCounter, setSubmitCounter] = useState(1);
   const [score, setScore] = useState(0);
   const [win, setWin] = useState(false);
+  const [lost, setLost] = useState(false);
 
   //Saving Name to Local Storage
   localStorage.setItem("name", name);
@@ -79,7 +80,7 @@ const GamePage = () => {
         setScore(score + 1);
         if (score === 4) {
           setWin(true);
-          setScore(1);
+          setScore(0);
           setStarted(false);
           setTimeout(() => {
             setWin(false);
@@ -95,22 +96,35 @@ const GamePage = () => {
         }, 900);
       } else {
         setLives(lives - 1);
-        setSubmitCounter(submitCounter + 1);
-        if (submitCounter === 5) {
-          setSubmitCounter(1);
-          setTryNext("Try Next Word");
-          setTimeout(() => {
-            setTryNext("");
-          }, 2000);
-          setCheckWord("");
-          setArrayWord("");
+        console.log(lives);
+        if (lives === 1) {
+          setLost(true);
+          setStarted(false);
           setWord("");
-          loadWord();
+          setArrayWord("");
+          setLives(5)
+          setScore(0)
+          setTimeout(() => {
+            setLost(false);
+          }, 8000);
+        } else {
+          setSubmitCounter(submitCounter + 1);
+          if (submitCounter === 5) {
+            setSubmitCounter(1);
+            setTryNext("Try Next Word");
+            setTimeout(() => {
+              setTryNext("");
+            }, 2000);
+            setCheckWord("");
+            setArrayWord("");
+            setWord("");
+            loadWord();
+          }
+          setWrong(true);
+          setTimeout(() => {
+            setWrong(false);
+          }, 900);
         }
-        setWrong(true);
-        setTimeout(() => {
-          setWrong(false);
-        }, 900);
       }
     }
   };
@@ -162,15 +176,29 @@ const GamePage = () => {
 
         {/*  Word Guess Success/Error  */}
         <Row>
-          {wrong ? <Alert variant="danger">Wrong !!{tryNext}</Alert> : <></>}
+          {wrong ? (
+            <Alert className="alert" variant="danger">
+              Wrong !!{tryNext}
+            </Alert>
+          ) : (
+            <></>
+          )}
         </Row>
-        <Row>{right ? <Alert variant="sucess">Correct !!</Alert> : <></>}</Row>
+        <Row>
+          {right ? (
+            <Alert className="alert" variant="sucess">
+              Correct !!
+            </Alert>
+          ) : (
+            <></>
+          )}
+        </Row>
 
         {/* Game Result Message Win/Lost  */}
 
         <Row>
           {win ? (
-            <Alert variant="warning">
+            <Alert variant="warning" className="alert">
               Congratulation ...!! {name} You Won the Game
             </Alert>
           ) : (
@@ -179,8 +207,8 @@ const GamePage = () => {
         </Row>
 
         <Row>
-          {lives === 0 ? (
-            <Alert variant="danger">
+          {lost ? (
+            <Alert variant="danger" className="alert">
               Better luck next time ..!! You Lost the Game
             </Alert>
           ) : (

@@ -38,3 +38,12 @@ main {
 .welcome {
   font-size: 60px;
 }
+
+.alert {
+  background-color: rgb(83, 116, 110);
+  border: none;
+  text-align: center;
+  font-size: 25px;
+  padding: 5px;
+  margin: 0px;
+}
