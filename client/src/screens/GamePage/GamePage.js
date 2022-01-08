@@ -63,10 +63,12 @@ const GamePage = () => {
       }
     });
     setArrayWord(temp.join(""));
+    console.log(response.data[0]);
   };
 
   //Submit Handler
   const submitHandler = async (e) => {
+    e.preventDefault();
     if (checkWord.normalize() === "" || word[0].length !== checkWord.length) {
       setError(true);
       setTimeout(() => {
@@ -74,11 +76,10 @@ const GamePage = () => {
       }, 2000);
     } else {
       if (word[0].normalize() === checkWord.normalize()) {
-        console.log(score);
         setScore(score + 1);
         if (score === 4) {
           setWin(true);
-          setScore(1)
+          setScore(1);
           setStarted(false);
           setTimeout(() => {
             setWin(false);
@@ -133,13 +134,21 @@ const GamePage = () => {
                 }}
               />
             </Form.Group>
+            <Form.Group>
+              <Button
+                variant="primary"
+                onClick={handleClose}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleClose();
+                  }
+                }}
+              >
+                Save
+              </Button>
+            </Form.Group>
           </Form>
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="primary" onClick={handleClose}>
-            Save
-          </Button>
-        </Modal.Footer>
       </Modal>
 
       <Container fluid className="game">
@@ -217,9 +226,9 @@ const GamePage = () => {
                 onClick={() => {
                   setStarted(false);
                   setWord("");
-                  setLives(5)
-                  setScore(0)
-                  setSubmitCounter(1)
+                  setLives(5);
+                  setScore(0);
+                  setSubmitCounter(1);
                   setCheckWord("");
                   setArrayWord("");
                   history.push("/game");
@@ -265,17 +274,16 @@ const GamePage = () => {
         {started ? (
           <>
             {/* Game Word  */}
-            <Row className="gameAreamain word">
-              <span>{arrayWord}</span>
-              <br />
-              <span>{word}</span>
+            <Row className="gameAreamain ">
+              <span className="word">{arrayWord}</span>
               {/* <span>{wordArray}</span> */}
             </Row>
 
             {/* Game Input Field  */}
             <Row className="gameAreamain">
-              <Form>
+              <Form className="inp">
                 <Form.Control
+                  className="input"
                   type="text"
                   placeholder="Enter Word"
                   value={checkWord}

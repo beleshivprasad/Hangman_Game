@@ -1,10 +1,10 @@
 .gamepage {
-  min-height: 87vh;
+  min-height: 80vh;
   background-color: rgb(83, 116, 110);
 }
 
 .game {
-  position: fixed;
+  position:absolute;
   left: 50%;
   top: 40%;
   max-width: 85%;
