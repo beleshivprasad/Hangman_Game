@@ -123,7 +123,12 @@ const GamePage = () => {
           <Modal.Title>Player Name</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
+          <Form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleClose();
+            }}
+          >
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Control
                 type="text"
@@ -135,15 +140,7 @@ const GamePage = () => {
               />
             </Form.Group>
             <Form.Group>
-              <Button
-                variant="primary"
-                onClick={handleClose}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handleClose();
-                  }
-                }}
-              >
+              <Button type="submit" variant="secondary">
                 Save
               </Button>
             </Form.Group>
@@ -281,7 +278,7 @@ const GamePage = () => {
 
             {/* Game Input Field  */}
             <Row className="gameAreamain">
-              <Form className="inp">
+              <Form className="inp" onSubmit={submitHandler}>
                 <Form.Control
                   className="input"
                   type="text"
@@ -291,20 +288,13 @@ const GamePage = () => {
                     setCheckWord(e.target.value);
                   }}
                 />
+                <Form.Group>
+                  {/* Game Submit Button  */}
+                  <Button className="button" variant="primary" type="submit">
+                    Submit
+                  </Button>
+                </Form.Group>
               </Form>
-            </Row>
-
-            {/* Game Submit Button  */}
-            <Row className="gameArea">
-              <Button
-                variant="primary"
-                type="submit"
-                onClick={() => {
-                  submitHandler();
-                }}
-              >
-                Submit
-              </Button>
             </Row>
           </>
         ) : (

@@ -7,7 +7,7 @@ const LandingPage = () => {
     <div className="landing">
       <Container className="start">
         <Row style={{ textAlign: "center" }}>
-          <h1>Welcome to the Hangman </h1>
+          <h1 className="welcome">Welcome to the Hangman </h1>
         </Row>
         <br></br>
         <hr></hr>
