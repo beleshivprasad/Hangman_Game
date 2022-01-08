@@ -11,7 +11,7 @@ function App() {
     <BrowserRouter>
       <Header></Header>
       <main className="main">
-        <Route path="/start" exact>
+        <Route path="/game" exact>
           <GamePage></GamePage>
         </Route>
         <Route path="/" exact>

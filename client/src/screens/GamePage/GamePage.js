@@ -13,11 +13,16 @@ import "./GamePage.css";
 import { Link } from "react-router-dom";
 
 const GamePage = () => {
-  var wordSet = [];
+  const [wordSet, setWordSet] = useState([]);
   const [show, setShow] = useState(false);
+  const [error, setError] = useState(false);
   const [name, setName] = useState("");
+  const [tryNext, setTryNext] = useState("");
+  const [wrong, setWrong] = useState(false);
+  const [right, setRight] = useState(false);
   const [started, setStarted] = useState(false);
   const [lives, setLives] = useState(5);
+  const [submitCounter, setSubmitCounter] = useState(1);
   const [score, setScore] = useState(0);
   const [num, setNum] = useState(0);
   const [word, setWord] = useState("");
@@ -32,27 +37,59 @@ const GamePage = () => {
     );
     setWord(response.data);
     let wd = Array.from(response.data[0]);
-    wordSet = wd;
-    // console.log(wordSet);
-    setNum(0 + Math.random() * (wd.length - 0));
+    wd.map((char, ind) => {
+      setNum(Math.floor(0 + Math.random() * (wd.length - 0)));
+      if (ind === num) {
+        wordSet.push(char);
+      } else {
+        wordSet.push("_");
+      }
+    });
   };
   // console.log(num);
 
+  const wordArray = async (char, ind) => {
+    return <span>{char}</span>;
+  };
+
   const submitHandler = async (e) => {
-    e.preventDefault();
-    console.log(word[0], checkWord);
-    if (word[0].normalize() === checkWord.normalize()) {
-      setScore(score + 1);
-      loadWord();
+    if (checkWord.normalize() === "" || word[0].length !== checkWord.length) {
+      setError(true);
+      setTimeout(() => {
+        setError(false);
+      }, 2000);
     } else {
-      setLives(lives - 1);
-      loadWord();
+      if (word[0].normalize() === checkWord.normalize()) {
+        setScore(score + 1);
+        setCheckWord("");
+        loadWord();
+        setRight(true);
+        setTimeout(() => {
+          setRight(false);
+        }, 900);
+      } else {
+        setLives(lives - 1);
+        setSubmitCounter(submitCounter + 1);
+        if (submitCounter === 5) {
+          setSubmitCounter(1);
+          setTryNext("Try Next Word");
+          setTimeout(() => {
+            setTryNext("");
+          }, 2000);
+          setCheckWord("");
+          loadWord();
+        }
+        setWrong(true);
+        setTimeout(() => {
+          setWrong(false);
+        }, 900);
+      }
     }
   };
 
   return (
     <div className="gamepage">
-      <Modal show={show} onHide={handleClose}>
+      <Modal show={show} onHide={handleClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>Player Name</Modal.Title>
         </Modal.Header>
@@ -76,7 +113,27 @@ const GamePage = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+
       <Container fluid className="game">
+        {/* Input Field Error  */}
+
+        <Row>
+          {error ? (
+            <Alert variant="danger">
+              Please Enter Complete Word of Same length !!
+            </Alert>
+          ) : (
+            <></>
+          )}
+        </Row>
+
+        {/*  Word Guess Success/Error  */}
+        <Row>
+          {wrong ? <Alert variant="danger">Wrong !!{tryNext}</Alert> : <></>}
+        </Row>
+        <Row>{right ? <Alert variant="sucess">Correct !!</Alert> : <></>}</Row>
+
+        {/* Game Result Message Win/Lost  */}
         <Row>
           {score === 5 ? (
             <Alert variant="warning">
@@ -95,6 +152,8 @@ const GamePage = () => {
             <></>
           )}
         </Row>
+
+        {/* Info Section of Name/Lives/Score  */}
         <Row className="gameArea">
           <Col className="c">
             <Button className="item" variant="dark">
@@ -112,7 +171,6 @@ const GamePage = () => {
             </Button>
           </Col>
         </Row>
-        <Row className="col"></Row>
         <Row className="gameArea">
           <Col className="c">
             {started ? (
@@ -123,9 +181,10 @@ const GamePage = () => {
                   localStorage.removeItem("name");
                   setStarted(false);
                   window.location.reload();
+                  setCheckWord("");
                 }}
               >
-                <Link to="/start">End Game</Link>
+                <Link to="/game">End Game</Link>
               </Button>
             ) : (
               <Button
@@ -133,7 +192,7 @@ const GamePage = () => {
                 className="item"
                 onClick={() => {
                   setStarted(true);
-                  if (name == "") {
+                  if (name === "") {
                     handleShow();
                   }
                   loadWord();
@@ -149,33 +208,52 @@ const GamePage = () => {
               className="item"
               onClick={() => {
                 localStorage.removeItem("name");
+                setCheckWord("");
                 window.location.reload();
               }}
             >
-              <Link to="/start">New Game</Link>
+              <Link to="/game">New Game</Link>
             </Button>
           </Col>
         </Row>
-        <Row className="gameAreamain word">
-          <span>{word}</span>
-        </Row>
-        <Row className="gameAreamain">
-          <Form>
-            <Form.Control
-              type="text"
-              placeholder="Enter Word"
-              value={checkWord}
-              onChange={(e) => {
-                setCheckWord(e.target.value);
-              }}
-            />
-          </Form>
-        </Row>
-        <Row className="gameArea">
-          <Button variant="primary" type="submit" onClick={submitHandler}>
-            Submit
-          </Button>
-        </Row>
+        {/* Game Area Started */}
+        {started ? (
+          <>
+            {/* Game Word  */}
+            <Row className="gameAreamain word">
+              <span>{wordSet?.forEach(wordArray)}</span>
+            </Row>
+            {/* Game Input Field  */}
+            <Row className="gameAreamain">
+              <Form>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter Word"
+                  value={checkWord}
+                  onChange={(e) => {
+                    setCheckWord(e.target.value);
+                  }}
+                />
+              </Form>
+            </Row>
+            {/* Game Submit Button  */}
+            <Row className="gameArea">
+              <Button
+                variant="primary"
+                type="submit"
+                onClick={() => {
+                  submitHandler();
+                }}
+              >
+                Submit
+              </Button>
+            </Row>
+          </>
+        ) : (
+          <></>
+        )}
+
+        {/* Game Area End here  */}
       </Container>
     </div>
   );

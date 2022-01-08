@@ -35,7 +35,7 @@ const LandingPage = () => {
             textAlign: "center",
           }}
         >
-          <Link to="/start">Start Playing Game</Link>
+          <Link to="/game">Start Playing Game</Link>
         </Row>
       </Container>
     </div>
