@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import {
   Alert,
   Button,
@@ -13,45 +14,58 @@ import "./GamePage.css";
 import { Link } from "react-router-dom";
 
 const GamePage = () => {
-  const [wordSet, setWordSet] = useState([]);
-  const [show, setShow] = useState(false);
-  const [error, setError] = useState(false);
-  const [name, setName] = useState("");
-  const [tryNext, setTryNext] = useState("");
+  //history variable
+  const history = useHistory();
+
+  // Alert States
   const [wrong, setWrong] = useState(false);
   const [right, setRight] = useState(false);
+  const [error, setError] = useState(false);
+  const [tryNext, setTryNext] = useState("");
+
+  // Modal related states
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  // Word Related States
+  const [checkWord, setCheckWord] = useState("");
+  const [word, setWord] = useState("");
+  const [arrayWord, setArrayWord] = useState("");
+
+  // Game Related States
+  const [name, setName] = useState("");
   const [started, setStarted] = useState(false);
   const [lives, setLives] = useState(5);
   const [submitCounter, setSubmitCounter] = useState(1);
   const [score, setScore] = useState(0);
-  const [num, setNum] = useState(0);
-  const [word, setWord] = useState("");
-  const [checkWord, setCheckWord] = useState("");
-  localStorage.setItem("name", name);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const [win, setWin] = useState(false);
 
+  //Saving Name to Local Storage
+  localStorage.setItem("name", name);
+
+  //Calling Api to get Word
   const loadWord = async () => {
     const response = await axios.get(
       "https://random-word-api.herokuapp.com/word"
     );
     setWord(response.data);
+    let temp = [];
     let wd = Array.from(response.data[0]);
-    wd.map((char, ind) => {
-      setNum(Math.floor(0 + Math.random() * (wd.length - 0)));
-      if (ind === num) {
-        wordSet.push(char);
-      } else {
-        wordSet.push("_");
+    wd.forEach((char, ind) => {
+      temp.push(" _ ");
+    });
+    wd.forEach((char, ind) => {
+      let num;
+      if (ind <= Math.ceil(wd.length / 2)) {
+        num = Math.floor(0 + Math.random() * (wd.length - 0));
+        temp[num] = wd[num];
       }
     });
-  };
-  // console.log(num);
-
-  const wordArray = async (char, ind) => {
-    return <span>{char}</span>;
+    setArrayWord(temp.join(""));
   };
 
+  //Submit Handler
   const submitHandler = async (e) => {
     if (checkWord.normalize() === "" || word[0].length !== checkWord.length) {
       setError(true);
@@ -60,9 +74,20 @@ const GamePage = () => {
       }, 2000);
     } else {
       if (word[0].normalize() === checkWord.normalize()) {
+        console.log(score);
         setScore(score + 1);
+        if (score === 4) {
+          setWin(true);
+          setScore(1)
+          setStarted(false);
+          setTimeout(() => {
+            setWin(false);
+          }, 8000);
+        }
         setCheckWord("");
+        setWord("");
         loadWord();
+        setArrayWord("");
         setRight(true);
         setTimeout(() => {
           setRight(false);
@@ -77,6 +102,8 @@ const GamePage = () => {
             setTryNext("");
           }, 2000);
           setCheckWord("");
+          setArrayWord("");
+          setWord("");
           loadWord();
         }
         setWrong(true);
@@ -89,6 +116,7 @@ const GamePage = () => {
 
   return (
     <div className="gamepage">
+      {/* Modal Pop-Up for getting players name  */}
       <Modal show={show} onHide={handleClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>Player Name</Modal.Title>
@@ -116,7 +144,6 @@ const GamePage = () => {
 
       <Container fluid className="game">
         {/* Input Field Error  */}
-
         <Row>
           {error ? (
             <Alert variant="danger">
@@ -134,8 +161,9 @@ const GamePage = () => {
         <Row>{right ? <Alert variant="sucess">Correct !!</Alert> : <></>}</Row>
 
         {/* Game Result Message Win/Lost  */}
+
         <Row>
-          {score === 5 ? (
+          {win ? (
             <Alert variant="warning">
               Congratulation ...!! {name} You Won the Game
             </Alert>
@@ -143,6 +171,7 @@ const GamePage = () => {
             <></>
           )}
         </Row>
+
         <Row>
           {lives === 0 ? (
             <Alert variant="danger">
@@ -154,39 +183,52 @@ const GamePage = () => {
         </Row>
 
         {/* Info Section of Name/Lives/Score  */}
+
+        {/* Players Name  */}
         <Row className="gameArea">
           <Col className="c">
             <Button className="item" variant="dark">
               Player {name !== "" ? name : ""}
             </Button>
           </Col>
+
+          {/* Lives  */}
           <Col className="c">
             <Button className="item" variant="warning">
               Lives {lives}
             </Button>
           </Col>
+
+          {/* Score  */}
           <Col className="c">
             <Button className="item" variant="success">
               Score {score}
             </Button>
           </Col>
         </Row>
+
         <Row className="gameArea">
           <Col className="c">
             {started ? (
+              // End Game Button
               <Button
                 variant="dark"
                 className="item"
                 onClick={() => {
-                  localStorage.removeItem("name");
                   setStarted(false);
-                  window.location.reload();
+                  setWord("");
+                  setLives(5)
+                  setScore(0)
+                  setSubmitCounter(1)
                   setCheckWord("");
+                  setArrayWord("");
+                  history.push("/game");
                 }}
               >
                 <Link to="/game">End Game</Link>
               </Button>
             ) : (
+              // Start Game Button
               <Button
                 variant="dark"
                 className="item"
@@ -202,6 +244,8 @@ const GamePage = () => {
               </Button>
             )}
           </Col>
+
+          {/* New Game Button  */}
           <Col className="c">
             <Button
               variant="dark"
@@ -216,13 +260,18 @@ const GamePage = () => {
             </Button>
           </Col>
         </Row>
+
         {/* Game Area Started */}
         {started ? (
           <>
             {/* Game Word  */}
             <Row className="gameAreamain word">
-              <span>{wordSet?.forEach(wordArray)}</span>
+              <span>{arrayWord}</span>
+              <br />
+              <span>{word}</span>
+              {/* <span>{wordArray}</span> */}
             </Row>
+
             {/* Game Input Field  */}
             <Row className="gameAreamain">
               <Form>
@@ -236,6 +285,7 @@ const GamePage = () => {
                 />
               </Form>
             </Row>
+
             {/* Game Submit Button  */}
             <Row className="gameArea">
               <Button
